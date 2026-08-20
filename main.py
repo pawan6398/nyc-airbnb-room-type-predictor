@@ -3,7 +3,8 @@ import pandas as pd
 from pydantic import BaseModel, Field
 import joblib
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -37,10 +38,11 @@ class Features(BaseModel):
 
 
 
-@app.get('/')
-def greet():
-    return "Pawan rajput"
+ 
 
+@app.get("/")
+def home():
+    return FileResponse("static/index.html")
 
 @app.post('/predict')
 def predict(features: Features):
