@@ -1,0 +1,1508 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NYC Airbnb Room Type Predictor</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================
+           GREEN / TEAL THEME
+        ========================= */
+
+        :root {
+            --bg: #06110e;
+            --surface: #0c1916;
+            --surface2: #10221d;
+            --surface3: #142a24;
+
+            --border: #21453b;
+
+            --text: #f1faf6;
+            --muted: #91aaa2;
+
+            --green: #7ee2a8;
+            --green-light: #a5f3c5;
+            --green-dark: #3ebd7a;
+
+            --cyan: #62e6d1;
+            --purple: #c084fc;
+            --orange: #ff9f68;
+            --red: #ff6b6b;
+
+            --shadow: rgba(0, 0, 0, 0.45);
+
+            --display: 'Oswald', sans-serif;
+            --body: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 10% 0%,
+                    rgba(126, 226, 168, 0.12),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at 90% 15%,
+                    rgba(98, 230, 209, 0.08),
+                    transparent 30%
+                ),
+                var(--bg);
+
+            color: var(--text);
+            font-family: var(--body);
+        }
+
+        /* =========================
+           TOP GLOW
+        ========================= */
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: -180px;
+            left: 50%;
+            transform: translateX(-50%);
+
+            width: 700px;
+            height: 350px;
+
+            background: rgba(126, 226, 168, 0.08);
+            filter: blur(100px);
+
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* =========================
+           MAIN WRAPPER
+        ========================= */
+
+        .container {
+            width: min(1100px, 92%);
+            margin: auto;
+            padding: 55px 0;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .badge {
+            display: inline-block;
+
+            padding: 8px 16px;
+
+            border: 1px solid var(--green-dark);
+            border-radius: 30px;
+
+            color: var(--green-light);
+
+            background: rgba(126, 226, 168, 0.08);
+
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-family: var(--display);
+
+            font-size: clamp(42px, 7vw, 78px);
+
+            line-height: 0.95;
+
+            margin: 0;
+
+            letter-spacing: 2px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    var(--green-light),
+                    var(--cyan)
+                );
+
+             -webkit-background-clip: text;
+background-clip: text;
+-webkit-text-fill-color: transparent;
+        }
+
+        .header h1 span {
+            display: block;
+        }
+
+        .subtitle {
+            max-width: 650px;
+
+            margin: 22px auto 0;
+
+            color: var(--muted);
+
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           MAIN GRID
+        ========================= */
+
+        .main-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 0.85fr;
+
+            gap: 25px;
+        }
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(20, 42, 36, 0.95),
+                    rgba(9, 23, 19, 0.98)
+                );
+
+            border: 1px solid var(--border);
+
+            border-radius: 18px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 25px 60px var(--shadow);
+
+            backdrop-filter: blur(12px);
+        }
+
+        .card-header {
+            display: flex;
+
+            align-items: center;
+            gap: 15px;
+
+            margin-bottom: 30px;
+
+            padding-bottom: 18px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .number {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background: var(--green);
+
+            color: #06110e;
+
+            font-weight: 800;
+        }
+
+        .card-header h2 {
+            margin: 0;
+
+            font-family: var(--display);
+
+            font-size: 25px;
+
+            letter-spacing: 1px;
+        }
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: var(--green);
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 15px;
+        }
+
+        /* =========================
+           FORM GRID
+        ========================= */
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+
+            padding: 13px 14px;
+
+            border-radius: 9px;
+
+            border: 1px solid var(--border);
+
+            background: var(--surface2);
+
+            color: var(--text);
+
+            outline: none;
+
+            font-family: var(--body);
+
+            transition: 0.2s ease;
+        }
+
+        input::placeholder {
+            color: #506b62;
+        }
+
+        input:hover,
+        select:hover {
+            border-color: #35675a;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--green);
+
+            box-shadow:
+                0 0 0 3px rgba(126, 226, 168, 0.12);
+
+            background: var(--surface3);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: #10221d;
+            color: white;
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .submit-btn {
+            width: 100%;
+
+            margin-top: 5px;
+
+            padding: 16px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green),
+                    var(--cyan)
+                );
+
+            color: #06110e;
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+
+            box-shadow:
+                0 12px 30px rgba(126, 226, 168, 0.18);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 18px 35px rgba(126, 226, 168, 0.28);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        /* =========================
+           RESULT CARD
+        ========================= */
+
+        .result-card {
+            min-height: 500px;
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+        .result-empty {
+            flex: 1;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+
+            margin: 0 auto 20px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 20px;
+
+            background: rgba(126, 226, 168, 0.07);
+
+            border: 1px solid var(--border);
+
+            font-size: 35px;
+        }
+
+        .result-empty h3 {
+            margin: 0 0 8px;
+
+            color: var(--text);
+
+            font-size: 20px;
+        }
+
+        /* =========================
+           RESULT
+        ========================= */
+
+        .result-content {
+            margin-top: 10px;
+        }
+
+        .verdict-label {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            letter-spacing: 2px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 10px;
+        }
+
+        .verdict {
+            padding: 22px;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(126, 226, 168, 0.12),
+                    rgba(98, 230, 209, 0.06)
+                );
+
+            border: 1px solid var(--green-dark);
+
+            margin-bottom: 25px;
+        }
+
+        .verdict h3 {
+            margin: 0;
+
+            font-family: var(--display);
+
+            font-size: 32px;
+
+            color: var(--green-light);
+        }
+
+        /* =========================
+           CONFIDENCE
+        ========================= */
+
+        .confidence-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 9px;
+        }
+
+        .confidence-header span:first-child {
+            color: var(--muted);
+        }
+
+        .confidence-value {
+            color: var(--green-light);
+
+            font-weight: 800;
+        }
+
+        .confidence-bar {
+            width: 100%;
+
+            height: 10px;
+
+            background: #07120f;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            border: 1px solid var(--border);
+        }
+
+        .confidence-fill {
+            height: 100%;
+
+            width: 0%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--green-dark),
+                    var(--green-light),
+                    var(--cyan)
+                );
+
+            border-radius: 20px;
+
+            transition: width 1s ease;
+        }
+
+        /* =========================
+           PROBABILITIES
+        ========================= */
+
+        .probability {
+            margin-top: 30px;
+        }
+
+        .probability h4 {
+            margin: 0 0 15px;
+
+            font-size: 13px;
+
+            color: var(--muted);
+
+            letter-spacing: 1px;
+        }
+
+        .prob-list {
+            list-style: none;
+
+            padding: 0;
+            margin: 0;
+        }
+
+        .prob-list li {
+            display: flex;
+
+            justify-content: space-between;
+
+            padding: 12px 0;
+
+            border-bottom: 1px solid var(--border);
+
+            color: var(--text);
+        }
+
+        .prob-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        .error-box {
+            padding: 16px;
+
+            border-radius: 10px;
+
+            background: rgba(255, 107, 107, 0.08);
+
+            border: 1px solid rgba(255, 107, 107, 0.3);
+
+            color: #ff9a9a;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            text-align: center;
+
+            margin-top: 35px;
+
+            color: #527068;
+
+            font-size: 12px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-card {
+                min-height: 350px;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .container {
+                padding: 35px 0;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .header h1 {
+                font-size: 45px;
+            }
+        }
+
+        /* =========================
+           HIDDEN
+        ========================= */
+
+        [hidden] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="header">
+
+        <div class="badge">
+            NYC · AIRBNB · MACHINE LEARNING
+        </div>
+
+        <h1>
+            ROOM TYPE
+            <span>PREDICTOR</span>
+        </h1>
+
+        <p class="subtitle">
+            Enter the particulars of a NYC Airbnb listing.
+            The machine learning classifier analyzes location,
+            pricing, reviews, host history and availability to
+            predict the most likely room type.
+        </p>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="main-grid">
+
+
+        <!-- ================= FORM ================= -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div class="number">01</div>
+
+                <h2>Listing Details</h2>
+
+            </div>
+
+
+            <form id="listing-form">
+
+
+                <!-- LOCATION -->
+
+                <div class="section">
+
+                    <div class="section-title">
+                        01 · LOCATION
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field full">
+
+                            <label for="neighbourhood_group">
+                                Borough *
+                            </label>
+
+                            <select
+                                id="neighbourhood_group"
+                                name="neighbourhood_group"
+                                required
+                            >
+
+                                <option value="">
+                                    Choose a borough…
+                                </option>
+
+                                <option value="Manhattan">
+                                    Manhattan
+                                </option>
+
+                                <option value="Brooklyn">
+                                    Brooklyn
+                                </option>
+
+                                <option value="Queens">
+                                    Queens
+                                </option>
+
+                                <option value="Bronx">
+                                    Bronx
+                                </option>
+
+                                <option value="Staten Island">
+                                    Staten Island
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field full">
+
+                            <label for="neighbourhood">
+                                Neighbourhood *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="neighbourhood"
+                                name="neighbourhood"
+                                placeholder="e.g. Midtown"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="latitude">
+                                Latitude *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="latitude"
+                                name="latitude"
+                                step="any"
+                                placeholder="40.7549"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="longitude">
+                                Longitude *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="longitude"
+                                name="longitude"
+                                step="any"
+                                placeholder="-73.9840"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TERMS -->
+
+                <div class="section">
+
+                    <div class="section-title">
+                        02 · TERMS & PRICING
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field">
+
+                            <label for="price">
+                                Price / night ($) *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                min="0"
+                                step="any"
+                                placeholder="150"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="minimum_nights">
+                                Minimum nights *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="minimum_nights"
+                                name="minimum_nights"
+                                min="1"
+                                max="365"
+                                placeholder="3"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="number_of_reviews">
+                                Total reviews *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="number_of_reviews"
+                                name="number_of_reviews"
+                                min="0"
+                                placeholder="24"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="reviews_per_month">
+                                Reviews / month *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="reviews_per_month"
+                                name="reviews_per_month"
+                                min="0"
+                                step="any"
+                                placeholder="1.2"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HOST -->
+
+                <div class="section">
+
+                    <div class="section-title">
+                        03 · HOST & AVAILABILITY
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field">
+
+                            <label for="calculated_host_listings_count">
+                                Host's total listings *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="calculated_host_listings_count"
+                                name="calculated_host_listings_count"
+                                min="0"
+                                placeholder="1"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="availability_365">
+                                Days available / yr *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="availability_365"
+                                name="availability_365"
+                                min="0"
+                                max="365"
+                                placeholder="180"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ERROR -->
+
+                <div
+                    id="form-error"
+                    class="error-box"
+                    hidden
+                ></div>
+
+
+                <!-- BUTTON -->
+
+                <button
+                    type="submit"
+                    id="submit-btn"
+                    class="submit-btn"
+                >
+                    <span class="submit-btn__label">
+                        CLASSIFY LISTING
+                    </span>
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ================= RESULT ================= -->
+
+        <div class="card result-card">
+
+            <div class="card-header">
+
+                <div class="number">02</div>
+
+                <h2>Classification</h2>
+
+            </div>
+
+
+            <!-- EMPTY -->
+
+            <div
+                id="result-empty"
+                class="result-empty"
+            >
+
+                <div>
+
+                    <div class="empty-icon">
+                        🏠
+                    </div>
+
+                    <h3>
+                        Awaiting listing
+                    </h3>
+
+                    <p>
+                        Fill the listing details and
+                        submit to receive the model verdict.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOADING -->
+
+            <div
+                id="result-loading"
+                class="result-empty"
+                hidden
+            >
+
+                <div>
+
+                    <div class="empty-icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Analyzing listing...
+                    </h3>
+
+                    <p>
+                        Random Forest is processing the
+                        property information.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ERROR -->
+
+            <div
+                id="result-error"
+                hidden
+            >
+
+                <div class="error-box">
+
+                    <strong>
+                        Prediction failed
+                    </strong>
+
+                    <p id="result-error-text">
+                        Unable to connect to the API.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- DONE -->
+
+            <div
+                id="result-done"
+                class="result-content"
+                hidden
+            >
+
+                <div class="verdict-label">
+                    MODEL VERDICT
+                </div>
+
+                <div class="verdict">
+
+                    <h3 id="stamp-text">
+                        Entire home/apt
+                    </h3>
+
+                </div>
+
+
+                <!-- CONFIDENCE -->
+
+                <div>
+
+                    <div class="confidence-header">
+
+                        <span>
+                            Prediction confidence
+                        </span>
+
+                        <span
+                            id="confidence-value"
+                            class="confidence-value"
+                        >
+                            0%
+                        </span>
+
+                    </div>
+
+
+                    <div class="confidence-bar">
+
+                        <div
+                            id="confidence-fill"
+                            class="confidence-fill"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PROBABILITY -->
+
+                <div class="probability">
+
+                    <h4>
+                        CLASS PROBABILITIES
+                    </h4>
+
+                    <ul
+                        id="prob-list"
+                        class="prob-list"
+                    ></ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        NYC Airbnb Room Type Classifier ·
+        Random Forest ·
+        FastAPI
+
+        <br>
+
+        <span>
+            API: 127.0.0.1:8000/predict
+        </span>
+
+    </footer>
+
+</div>
+
+
+<script>
+
+const API_URL = "http://127.0.0.1:8000/predict";
+
+
+const form = document.getElementById("listing-form");
+
+const submitBtn =
+    document.getElementById("submit-btn");
+
+const formError =
+    document.getElementById("form-error");
+
+
+const panelEmpty =
+    document.getElementById("result-empty");
+
+const panelLoading =
+    document.getElementById("result-loading");
+
+const panelDone =
+    document.getElementById("result-done");
+
+const panelError =
+    document.getElementById("result-error");
+
+
+const errorText =
+    document.getElementById("result-error-text");
+
+
+const confidenceValue =
+    document.getElementById("confidence-value");
+
+const confidenceFill =
+    document.getElementById("confidence-fill");
+
+const probList =
+    document.getElementById("prob-list");
+
+
+/* =========================
+   SHOW RESULT PANEL
+========================= */
+
+function showPanel(type) {
+
+    panelEmpty.hidden =
+        type !== "empty";
+
+    panelLoading.hidden =
+        type !== "loading";
+
+    panelDone.hidden =
+        type !== "done";
+
+    panelError.hidden =
+        type !== "error";
+}
+
+
+/* =========================
+   FORM SUBMIT
+========================= */
+
+form.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    formError.hidden = true;
+
+    if (!form.checkValidity()) {
+
+        form.reportValidity();
+
+        return;
+    }
+
+
+    const formData =
+        new FormData(form);
+
+
+    const payload = {
+
+        latitude:
+            parseFloat(
+                formData.get("latitude")
+            ),
+
+        longitude:
+            parseFloat(
+                formData.get("longitude")
+            ),
+
+        price:
+            parseFloat(
+                formData.get("price")
+            ),
+
+        minimum_nights:
+            parseInt(
+                formData.get("minimum_nights")
+            ),
+
+        number_of_reviews:
+            parseInt(
+                formData.get("number_of_reviews")
+            ),
+
+        reviews_per_month:
+            parseFloat(
+                formData.get("reviews_per_month")
+            ),
+
+        calculated_host_listings_count:
+            parseInt(
+                formData.get(
+                    "calculated_host_listings_count"
+                )
+            ),
+
+        availability_365:
+            parseInt(
+                formData.get(
+                    "availability_365"
+                )
+            ),
+
+        neighbourhood_group:
+            formData.get(
+                "neighbourhood_group"
+            ),
+
+        neighbourhood:
+            formData.get(
+                "neighbourhood"
+            )
+    };
+
+
+    /* Loading */
+
+    submitBtn.disabled = true;
+
+    submitBtn.querySelector(
+        ".submit-btn__label"
+    ).textContent = "ANALYZING...";
+
+    showPanel("loading");
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(payload)
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            if (result.detail) {
+
+                throw new Error(
+                    JSON.stringify(
+                        result.detail
+                    )
+                );
+
+            }
+
+            throw new Error(
+                "Prediction failed."
+            );
+        }
+
+
+        /* =========================
+           PREDICTION
+        ========================= */
+
+        const prediction =
+            result.Predicted_room_type;
+
+
+        const probabilities =
+            result.Probability;
+
+
+        /* Prediction text */
+
+        document.getElementById(
+            "stamp-text"
+        ).textContent = prediction;
+
+
+        /* =========================
+           CONFIDENCE
+        ========================= */
+
+        if (
+            Array.isArray(probabilities) &&
+            probabilities.length > 0
+        ) {
+
+            const maxProbability =
+                Math.max(...probabilities);
+
+
+            const confidence =
+                maxProbability * 100;
+
+
+            confidenceValue.textContent =
+                confidence.toFixed(1) + "%";
+
+
+            confidenceFill.style.width =
+                confidence + "%";
+
+
+            /* =========================
+               PROBABILITY LIST
+            ========================= */
+
+            probList.innerHTML = "";
+
+
+            const classNames = [
+
+                "Entire home/apt",
+
+                "Private room",
+
+                "Shared room"
+
+            ];
+
+
+            probabilities.forEach(
+                (probability, index) => {
+
+                    const li =
+                        document.createElement(
+                            "li"
+                        );
+
+
+                    const className =
+                        classNames[index] ||
+                        `Class ${index}`;
+
+
+                    li.innerHTML = `
+
+                        <span>
+                            ${className}
+                        </span>
+
+                        <strong>
+                            ${(probability * 100)
+                                .toFixed(1)}%
+                        </strong>
+
+                    `;
+
+
+                    probList.appendChild(li);
+
+                }
+            );
+
+        }
+
+
+        showPanel("done");
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        errorText.textContent =
+            "API connection failed. Make sure FastAPI is running on 127.0.0.1:8000.";
+
+
+        showPanel("error");
+
+    }
+
+
+    finally {
+
+        submitBtn.disabled = false;
+
+        submitBtn.querySelector(
+            ".submit-btn__label"
+        ).textContent =
+            "CLASSIFY LISTING";
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
