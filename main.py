@@ -42,7 +42,7 @@ class Features(BaseModel):
 
 @app.get("/")
 def home():
-    return FileResponse("index(1).html")
+    return FileResponse("index (1).html")
 
 @app.post('/predict')
 def predict(features: Features):
