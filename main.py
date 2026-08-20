@@ -45,7 +45,7 @@ class Features(BaseModel):
 @app.get("/")
 def home():
     html_path = Path(__file__).parent / "index (1).html"
-    return FileResponse(html_path)
+    return FileResponse(str(html_path))
 
 @app.post('/predict')
 def predict(features: Features):
