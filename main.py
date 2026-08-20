@@ -5,6 +5,8 @@ import joblib
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from pathlib import Path
+
 
 app = FastAPI()
 
@@ -42,7 +44,8 @@ class Features(BaseModel):
 
 @app.get("/")
 def home():
-    return FileResponse("index (1).html")
+    html_path = Path(__file__).parent / "index (1).html"
+    return FileResponse(html_path)
 
 @app.post('/predict')
 def predict(features: Features):
